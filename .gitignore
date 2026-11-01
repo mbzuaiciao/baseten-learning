@@ -1,0 +1,45 @@
+
+# ==========================================
+# Baseten Learning - .gitignore
+# ==========================================
+
+# API keys and environment variables
+.env
+.env.*
+!.env.example
+
+# Python virtual environments
+.venv/
+venv/
+env/
+
+# Python cache and compiled files
+__pycache__/
+*.py[cod]
+*.egg-info/
+build/
+dist/
+
+# Testing and linting caches
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+
+# IDE and editor
+.vscode/
+.idea/
+
+# Local logs and temporary files
+*.log
+*.tmp
+.cache/
+
+.obsidian/
