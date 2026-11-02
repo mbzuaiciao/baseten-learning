@@ -38,7 +38,8 @@ client = OpenAI(
 response = client.chat.completions.create(
     # Model hosted by Baseten.
     # No local model download or GPU is required.
-    model="meta-models/muse-spark-open",
+    #model="meta-models/muse-spark-open",
+    model="meta-models/muse-spark-open-1026",
 
     # Conversation messages sent to the model.
     # Each message has a role and content.
@@ -54,7 +55,8 @@ response = client.chat.completions.create(
 
     # Limit the number of generated tokens.
     # This helps control response length and cost.
-    max_tokens=200,
+    reasoning_effort="low",
+    max_tokens=1000,
 )
 
 
