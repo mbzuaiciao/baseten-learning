@@ -142,12 +142,26 @@ uv run python muse_regime_exp003.py --limit 24
 ```
 
 This makes up to 48 calls in total, including already completed calls.
-The script saves every successful response in the separate, ignored
-`muse_regime_exp003.jsonl`. Re-running skips existing case/prompt pairs.
-On any API/parse failure the run stops without automatic retries; the terminal
-summary includes only **paired completed cases** so neither prompt benefits
-from extra unpaired observations. Empty responses are not counted as wrong
-classifications. A model can still have a lower completion rate.
+The script saves **successful and failed attempts** in the separate, ignored
+`muse_regime_exp003.jsonl`. A failed call is logged and the run continues with
+the other prompt and subsequent cases. Reruns skip all recorded attempts,
+including failures; no automatic retries occur. The terminal summary and
+dashboard calculate accuracy and Brier score only on **paired successful cases**
+and report failure counts separately. An empty response is not a wrong
+classification; it is a completion failure.
+
+The original prompt already failed on **Case 8** before this change. To
+record that *observed* failure without repeating or paying for the call, run
+once before resuming:
+
+```bash
+uv run python muse_regime_exp003.py --mark-failed 8:original
+uv run python muse_regime_exp003.py --limit 24
+```
+
+The `--mark-failed` option records the previously observed failure and exits
+without contacting the API. It is not a mechanism for inventing failures;
+only use it for calls whose failures you actually observed.
 
 The dashboard includes an **Experiment 003** loader for this single JSONL file
 and shows matched-case accuracy, Brier scores, and decision/probability conflicts.
