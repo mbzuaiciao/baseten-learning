@@ -43,3 +43,5 @@ htmlcov/
 .cache/
 
 .obsidian/
+# Local experimental results (may contain model outputs)
+muse_regime_results.jsonl
