@@ -204,7 +204,7 @@ byId("exp3Input").addEventListener("change",async e=>{
  try{
    const contents=await file.text();
    const entries=file.name.endsWith(".jsonl")||file.name.endsWith(".txt")
-     ?contents.split(/\\r?\\n/).filter(x=>x.trim()).map(JSON.parse)
+     ?contents.split(/\r?\n/).filter(x=>x.trim()).map(JSON.parse)
      :JSON.parse(contents);
    if(!Array.isArray(entries))throw Error("Expected JSONL records.");
    const seen=new Set();
