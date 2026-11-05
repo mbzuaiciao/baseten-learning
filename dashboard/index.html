@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="color-scheme" content="light">
+<title>Muse • Experiment Results</title>
+<style>
+:root{font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Segoe UI",sans-serif;color:#1d1d1f;background:#f5f5f7;font-synthesis:none}
+*{box-sizing:border-box}body{margin:0}button,input{font:inherit}button{cursor:pointer}a{color:inherit;text-decoration:none}.shell{max-width:1140px;margin:auto;padding:0 28px 72px}
+header{height:78px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #dedee2}.brand{font-size:19px;font-weight:700;letter-spacing:-.7px}.brand span{font-weight:400;color:#86868b;margin-left:9px}.nav{font-size:13px;color:#6e6e73}
+.hero{padding:72px 0 46px;max-width:840px}.eyebrow{font-size:12px;font-weight:700;text-transform:uppercase;letter-spacing:2px;color:#0071e3}.hero h1{font-size:clamp(38px,5.3vw,72px);letter-spacing:-.055em;line-height:1.03;margin:16px 0 20px;font-weight:700}.hero p{font-size:19px;line-height:1.55;max-width:710px;color:#6e6e73;margin:0}
+.toolbar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;justify-content:space-between;margin-bottom:26px}.pill{display:inline-flex;align-items:center;gap:8px;font-size:12px;font-weight:600;background:#e6e6eb;color:#57575e;padding:9px 13px;border-radius:999px}.dot{width:7px;height:7px;border-radius:50%;background:#c57b00}.controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap}.upload{background:#1d1d1f;color:white;border-radius:999px;padding:12px 18px;border:0;font-size:13px;font-weight:600;display:inline-block;cursor:pointer}.upload input{display:none}.subtle{background:none;border:0;color:#0066cc;font-weight:600;font-size:13px;padding:10px}
+.cards{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:16px}.card,.panel{background:white;border:1px solid #e9e9ec;border-radius:22px;box-shadow:0 4px 20px #17171a05}.card{padding:24px;min-height:162px}.metric-label{font-size:13px;color:#6e6e73}.metric{font-size:clamp(30px,3.6vw,45px);letter-spacing:-.055em;font-weight:650;margin:20px 0 6px;font-variant-numeric:tabular-nums}.small{font-size:12px;color:#86868b;line-height:1.5}
+section{margin-top:29px}.panel{padding:28px}.section-title{font-size:23px;letter-spacing:-.03em;margin:0 0 8px}.section-intro{font-size:14px;color:#6e6e73;margin:0 0 22px;line-height:1.6}.split{display:grid;grid-template-columns:1.2fr .8fr;gap:18px}
+.bar-row{margin:22px 0}.bar-head{display:flex;justify-content:space-between;font-size:14px;margin-bottom:10px;font-weight:600}.track{height:13px;border-radius:20px;background:#eeeef0;overflow:hidden}.fill{height:100%;border-radius:20px;transition:width .3s}.fill.muse{background:#0071e3}.fill.base{background:#1d1d1f}
+.insight{margin:17px 0;border-left:3px solid #d29b43;padding:3px 0 3px 15px;font-size:14px;color:#44444a;line-height:1.65}.insight strong{color:#1d1d1f}.progress{display:flex;gap:5px;margin-top:22px}.segment{height:10px;flex:1;border-radius:5px;background:#e9e9ed}.segment.done{background:#0071e3}.segment.failed{background:#d59e48}
+.case-tools{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:15px}select{border:1px solid #dddde2;border-radius:11px;background:white;padding:10px 12px;color:#333;font-size:13px}.table-wrap{overflow-x:auto}table{width:100%;border-collapse:collapse;min-width:700px;font-size:13px}th{text-align:left;color:#86868b;font-weight:600;padding:14px 12px;border-bottom:1px solid #e8e8eb}td{padding:16px 12px;border-bottom:1px solid #eeeef1;vertical-align:middle}tr:last-child td{border-bottom:0}.num{font-variant-numeric:tabular-nums}.status{display:inline-block;padding:5px 9px;font-size:11px;font-weight:650;border-radius:7px;background:#e9f6ee;color:#187947}.status.bad{background:#fff0ed;color:#b5432f}.muted{color:#86868b}.reason{max-width:380px;line-height:1.48;color:#5c5c62}.flag{font-size:11px;color:#9c671d;font-weight:650;display:block;margin-top:5px}.hint{font-size:12px;color:#86868b;line-height:1.6;margin-top:16px}
+.method-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}.method-grid h3{font-size:15px;margin:0 0 8px}.method-grid p{font-size:13px;color:#6e6e73;line-height:1.65;margin:0}
+footer{padding-top:32px;text-align:center;font-size:12px;color:#86868b}.error{margin:18px 0;color:#b5432f;font-size:13px}
+@media(max-width:850px){.cards{grid-template-columns:repeat(2,1fr)}.split{grid-template-columns:1fr}.method-grid{grid-template-columns:1fr}.hero{padding-top:46px}}
+@media(max-width:520px){.shell{padding:0 16px 50px}header{height:65px}.nav{display:none}.cards{gap:10px}.card{padding:18px;min-height:130px}.panel{padding:20px}.hero p{font-size:16px}.metric{margin-top:14px}}
+</style>
+</head>
+<body>
+<div class="shell">
+<header><a class="brand" href="./">Muse<span>Research</span></a><div class="nav">Baseten Learning <span aria-hidden="true">·</span> Experimental results</div></header>
+<main>
+<div class="hero"><div class="eyebrow">Research / Pilot 001</div><h1>Can AI recognize<br>market regime shifts?</h1><p>A controlled study of whether Muse Spark Open can distinguish persistent volatility changes from isolated shocks in synthetic financial returns.</p></div>
+<div class="toolbar"><div class="pill"><i class="dot" aria-hidden="true"></i><span id="runStatus">Pilot stopped at Case 18</span></div><div class="controls"><span id="sourceLabel" class="small" aria-live="polite">Observed transcript snapshot</span><label class="upload">Load local results<input id="fileInput" type="file" accept=".jsonl,.json,.txt"></label><button id="reset" class="subtle" type="button">Reset</button></div></div>
+<div id="error" class="error" role="alert" hidden></div>
+<div class="cards" aria-label="Key metrics">
+<div class="card"><div class="metric-label">Muse accuracy</div><div class="metric" id="museAccuracy">—</div><div class="small" id="museCount"></div></div>
+<div class="card"><div class="metric-label">Baseline accuracy</div><div class="metric" id="baseAccuracy">—</div><div class="small" id="baseCount"></div></div>
+<div class="card"><div class="metric-label">Muse Brier score</div><div class="metric" id="brier">—</div><div class="small">Lower is better · confidence not calibrated</div></div>
+<div class="card"><div class="metric-label">Completed cases</div><div class="metric" id="complete">—</div><div class="small">24 planned · deterministic synthetic data</div></div>
+</div>
+<div class="split">
+<section class="panel"><h2 class="section-title">Head-to-head</h2><p class="section-intro">Classification accuracy among completed cases, using a 50% threshold for Muse.</p>
+<div class="bar-row"><div class="bar-head"><span>Muse Spark Open</span><span id="musePct"></span></div><div class="track"><div class="fill muse" id="museBar"></div></div></div>
+<div class="bar-row"><div class="bar-head"><span>Statistical baseline</span><span id="basePct"></span></div><div class="track"><div class="fill base" id="baseBar"></div></div></div>
+<p class="hint">The baseline predicts a change when the ratio of median absolute returns (second half / first half) is at least 1.75. This is an illustrative rule, not a tuned state-of-the-art change-point detector.</p></section>
+<section class="panel"><h2 class="section-title">Research notes</h2><p class="section-intro">What the pilot has revealed so far.</p>
+<div class="insight"><strong>Numbers and narratives can disagree.</strong> In the observed transcript, Cases 4 and 8 gave high change probabilities even though their explanations argued against a persistent change.</div>
+<div class="insight"><strong>Incomplete, not a final evaluation.</strong> Case 18 returned no visible response after reaching the 2,500-token limit. Only successful cases are scored.</div>
+<div class="progress" id="progress" aria-label="Progress across 24 cases"></div><p class="hint" id="progressText"></p>
+</section></div>
+<section class="panel"><div class="case-tools"><div><h2 class="section-title">Case explorer</h2><p class="section-intro" style="margin-bottom:0">Inspect individual predictions and the model’s explanation.</p></div><select id="filter" aria-label="Filter case outcomes"><option value="all">All completed cases</option><option value="errors">Muse incorrect</option><option value="correct">Muse correct</option><option value="conflicts">Decision vs probability conflicts</option></select></div>
+<div class="table-wrap"><table><thead><tr><th>Case</th><th>Ground truth</th><th>Baseline</th><th>Muse P(change)</th><th>Muse result</th><th>Explanation</th></tr></thead><tbody id="caseRows"></tbody></table></div>
+<p class="hint">For the transcript snapshot, the explicit JSON decision was not displayed in terminal logs; discrepancies flagged in the explanations are qualitative observations, not a measured decision/probability conflict. Loading your local JSONL enables a strict consistency check against the recorded <code>model.decision</code>.</p></section>
+<section class="panel"><h2 class="section-title">How the experiment works</h2><p class="section-intro">An intentionally small exploratory study, separate from the frozen EXP-001 foundation-model protocol.</p><div class="method-grid">
+<div><h3>01 · Generate</h3><p>24 reproducible 60-day return series. Half have a sustained volatility increase after day 30; the others have unchanged volatility with an isolated outlier.</p></div>
+<div><h3>02 · Evaluate</h3><p>Muse receives only the return observations and returns a change probability, a binary decision and a short reason. A fixed robust statistical rule serves as the baseline.</p></div>
+<div><h3>03 · Interpret</h3><p>Compare accuracy and Brier score; inspect unsupported numerical claims and probability/decision disagreements. No inference about causal market mechanisms is warranted.</p></div>
+</div></section>
+</main><footer>Muse Spark Open · Baseten Learning · Synthetic data only · Research demonstration, not investment advice.</footer>
+</div>
+<script>
+"use strict";
+const byId=id=>document.getElementById(id);
+let rows=[], source="snapshot", meta={};
+const TOTAL=24;
+const pct=x=>(x*100).toFixed(1)+"%";
+const label=x=>x===1?"Change":"No change";
+const text=(tag,value,cls)=>{const e=document.createElement(tag);e.textContent=value;if(cls)e.className=cls;return e;};
+function validate(items){
+ if(!Array.isArray(items))throw Error("Expected an array of JSONL records.");
+ const map=new Map();
+ for(const raw of items){
+   if(!raw||!Number.isInteger(raw.id)||raw.id<1||raw.id>TOTAL||![0,1].includes(raw.truth)||![0,1].includes(raw.baseline_label))throw Error("Invalid case id, truth or baseline label.");
+   const p=raw.model?.probability;
+   if(typeof p!=="number"||!Number.isFinite(p)||p<0||p>1)throw Error("Invalid Muse probability in case "+raw.id);
+   if(raw.model.decision!==undefined&&!["change","no_change"].includes(raw.model.decision))throw Error("Invalid decision in case "+raw.id);
+   map.set(raw.id,raw);
+ }
+ return [...map.values()].sort((a,b)=>a.id-b.id);
+}
+const isCorrect=r=>(r.model.probability>=.5?1:0)===r.truth;
+const isConflict=r=>r.model.decision!==undefined&&(r.model.decision==="change")!==(r.model.probability>=.5);
+function render(){
+ const n=rows.length, m=rows.filter(isCorrect).length, b=rows.filter(r=>r.baseline_label===r.truth).length;
+ const a=n?m/n:0,base=n?b/n:0;
+ const bs=n?rows.reduce((s,r)=>s+(r.model.probability-r.truth)**2,0)/n:NaN;
+ byId("museAccuracy").textContent=n?pct(a):"—";byId("museCount").textContent=n?m+" of "+n+" correct":"No completed cases";
+ byId("baseAccuracy").textContent=n?pct(base):"—";byId("baseCount").textContent=n?b+" of "+n+" correct":"No completed cases";
+ byId("brier").textContent=n?bs.toFixed(3):"—";byId("complete").textContent=n+" / "+TOTAL;
+ byId("musePct").textContent=n?pct(a):"—";byId("basePct").textContent=n?pct(base):"—";
+ byId("museBar").style.width=pct(a);byId("baseBar").style.width=pct(base);
+ const status=source==="snapshot"?"Pilot stopped at Case 18":n===TOTAL?"All cases complete":"Local file · "+n+" completed";
+ byId("runStatus").textContent=status;
+ byId("sourceLabel").textContent=source==="snapshot"?"Observed transcript snapshot":"Local JSONL file";
+ const progress=byId("progress");progress.replaceChildren();
+ for(let i=1;i<=TOTAL;i++){const box=document.createElement("span");box.className="segment"+(rows.some(r=>r.id===i)?" done":source==="snapshot"&&i===18?" failed":"");progress.append(box);}
+ byId("progressText").textContent=source==="snapshot"?"17 completed · Case 18 stopped at token limit · 6 not attempted":"Progress reflects successful cases in the selected file; failed requests are not recorded in JSONL.";
+ const mode=byId("filter").value;const visible=rows.filter(r=>mode==="all"||mode==="errors"&&!isCorrect(r)||mode==="correct"&&isCorrect(r)||mode==="conflicts"&&isConflict(r));
+ const tbody=byId("caseRows");tbody.replaceChildren();
+ for(const r of visible){
+   const tr=document.createElement("tr");
+   tr.append(text("td",String(r.id).padStart(2,"0"),"num"));
+   tr.append(text("td",label(r.truth)));
+   tr.append(text("td",label(r.baseline_label)));
+   tr.append(text("td",pct(r.model.probability),"num"));
+   const result=document.createElement("td");result.append(text("span",isCorrect(r)?"Correct":"Incorrect","status"+(isCorrect(r)?"":" bad")));
+   if(isConflict(r))result.append(text("span","Decision / probability mismatch","flag"));
+   else if(source==="snapshot"&&[4,8,14].includes(r.id))result.append(text("span","Review explanation","flag"));
+   tr.append(result);
+   tr.append(text("td",r.model.reason||"No explanation recorded","reason"));tbody.append(tr);
+ }
+ if(!visible.length){const tr=document.createElement("tr");const td=text("td","No cases match this filter.","muted");td.colSpan=6;tr.append(td);tbody.append(tr);}
+}
+async function loadSnapshot(){
+ byId("error").hidden=true;
+ try{const res=await fetch("./snapshot.json");if(!res.ok)throw Error("Snapshot unavailable");const data=await res.json();rows=validate(data.cases);meta=data;source="snapshot";render();}
+ catch(err){byId("error").textContent="Could not load the included snapshot. Open this page using a local web server (python3 -m http.server 8000 from the repository root), or load a JSONL file.";byId("error").hidden=false;}
+}
+byId("fileInput").addEventListener("change",async e=>{
+ const file=e.target.files?.[0];if(!file)return;
+ try{
+   const input=await file.text();
+   const parsed=file.name.endsWith(".jsonl")||file.name.endsWith(".txt")?input.split(/\r?\n/).filter(x=>x.trim()).map(JSON.parse):JSON.parse(input);
+   const candidate=validate(Array.isArray(parsed)?parsed:(parsed.cases||[]));
+   rows=candidate;source="local";byId("error").hidden=true;render();
+ }catch(err){byId("error").textContent="Unable to load the file: "+err.message;byId("error").hidden=false;}
+ e.target.value="";
+});
+byId("reset").addEventListener("click",loadSnapshot);
+byId("filter").addEventListener("change",render);
+loadSnapshot();
+</script>
+</body></html>
