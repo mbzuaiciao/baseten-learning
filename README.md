@@ -117,3 +117,43 @@ matched-case accuracy and Brier scores. Both files stay in your browser.
 **Stopping rule:** evaluate at most 24 planned cases, compare on paired cases,
 and record whether the revised prompt improved reliability. This remains an
 exploratory prompt comparison, not foundation-model pretraining.
+
+## EXP-003: Fresh-case generalization check
+
+This is a **new, frozen-seed evaluation** of the two existing prompts on 24
+different synthetic 60-day return series (seed `20261106` instead of
+`20261105`). The data-generating procedure, label balance, model,
+`reasoning_effort="low"`, and 2,500-token budget remain unchanged.
+The script imports the EXP-001 and EXP-002 prompt functions unchanged.
+The aim is to test whether the apparent EXP-002 improvement extends to unseen
+randomly generated cases, not to tune another prompt.
+
+From the repository root, with your existing local `.env`:
+
+```bash
+uv run python muse_regime_exp003.py --limit 2
+```
+
+This sends up to **four** API requests (original and revised for each case).
+If the smoke test works, complete the fixed evaluation once:
+
+```bash
+uv run python muse_regime_exp003.py --limit 24
+```
+
+This makes up to 48 calls in total, including already completed calls.
+The script saves every successful response in the separate, ignored
+`muse_regime_exp003.jsonl`. Re-running skips existing case/prompt pairs.
+On any API/parse failure the run stops without automatic retries; the terminal
+summary includes only **paired completed cases** so neither prompt benefits
+from extra unpaired observations. Empty responses are not counted as wrong
+classifications. A model can still have a lower completion rate.
+
+The dashboard includes an **Experiment 003** loader for this single JSONL file
+and shows matched-case accuracy, Brier scores, and decision/probability conflicts.
+As with the previous experiments, the local file is read in-browser and not
+automatically committed.
+
+**Stopping rule:** After the planned 24 new cases (48 inference calls), report
+whether the revised prompt generalizes, including negative/inconclusive
+results, without changing prompts based on this test.

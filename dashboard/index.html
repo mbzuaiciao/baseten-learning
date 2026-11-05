@@ -57,6 +57,18 @@ footer{padding-top:32px;text-align:center;font-size:12px;color:#86868b}.error{ma
 </div>
 <p class="hint" id="pairNote">Both runs use the same synthetic observations. EXP-002 clarifies probability direction and asks the binary decision to match the 0.5 threshold. The comparison is exploratory and does not establish improvement until results are collected.</p>
 </section>
+
+<section class="panel" aria-labelledby="exp3Title">
+<h2 class="section-title" id="exp3Title">Experiment 003 · New data generalization</h2>
+<p class="section-intro">A fresh set of 24 synthetic series, with both frozen prompts evaluated on every case. Scores are calculated on matched case IDs only.</p>
+<div class="comparison-controls"><label class="upload">Load Experiment 003<input id="exp3Input" type="file" accept=".jsonl,.json,.txt"></label><span class="small" id="exp3Source">No results loaded · awaiting new run</span></div>
+<div class="comparison">
+<div class="comparison-cell"><div class="metric-label">Paired cases</div><div class="comparison-value" id="exp3Pairs">—</div><div class="comparison-sub" id="exp3Calls">0 of 48 calls loaded</div></div>
+<div class="comparison-cell"><div class="metric-label">Original prompt accuracy</div><div class="comparison-value" id="exp3Original">—</div><div class="comparison-sub" id="exp3OriginalBrier">Brier —</div></div>
+<div class="comparison-cell"><div class="metric-label">Revised prompt accuracy</div><div class="comparison-value" id="exp3Revised">—</div><div class="comparison-sub" id="exp3RevisedBrier">Brier —</div></div>
+</div>
+<p class="hint" id="exp3Note">The original and revised prompts are held fixed. The new random seed is 20261106. No outcomes are populated until you load the local results.</p>
+</section>
 <section class="panel"><div class="case-tools"><div><h2 class="section-title">Case explorer</h2><p class="section-intro" style="margin-bottom:0">Inspect individual predictions and the model’s explanation.</p></div><select id="filter" aria-label="Filter case outcomes"><option value="all">All completed cases</option><option value="errors">Muse incorrect</option><option value="correct">Muse correct</option><option value="conflicts">Decision vs probability conflicts</option></select></div>
 <div class="table-wrap"><table><thead><tr><th>Case</th><th>Ground truth</th><th>Baseline</th><th>Muse P(change)</th><th>Muse result</th><th>Explanation</th></tr></thead><tbody id="caseRows"></tbody></table></div>
 <p class="hint">For the transcript snapshot, the explicit JSON decision was not displayed in terminal logs; discrepancies flagged in the explanations are qualitative observations, not a measured decision/probability conflict. Loading your local JSONL enables a strict consistency check against the recorded <code>model.decision</code>.</p></section>
@@ -70,7 +82,7 @@ footer{padding-top:32px;text-align:center;font-size:12px;color:#86868b}.error{ma
 <script>
 "use strict";
 const byId=id=>document.getElementById(id);
-let rows=[], exp2Rows=[], source="snapshot", meta={};
+let rows=[], exp2Rows=[], exp3Rows=[], source="snapshot", meta={};
 const TOTAL=24;
 const pct=x=>(x*100).toFixed(1)+"%";
 const label=x=>x===1?"Change":"No change";
@@ -164,6 +176,55 @@ byId("exp2Input").addEventListener("change",async e=>{
    byId("exp2Source").textContent=file.name+" · "+candidate.length+" cases";
    byId("error").hidden=true;renderComparison();
  }catch(err){byId("error").textContent="Unable to load EXP-002: "+err.message;byId("error").hidden=false;}
+ e.target.value="";
+});
+
+function renderExp3(){
+ const orig=new Map(exp3Rows.filter(r=>r.prompt==="original").map(r=>[r.id,r]));
+ const revised=new Map(exp3Rows.filter(r=>r.prompt==="revised").map(r=>[r.id,r]));
+ const ids=[...orig.keys()].filter(id=>revised.has(id)).sort((a,b)=>a-b);
+ const a=ids.map(id=>orig.get(id)), b=ids.map(id=>revised.get(id));
+ const n=ids.length;
+ const accuracy=items=>items.filter(isCorrect).length/n;
+ const brier=items=>items.reduce((s,r)=>s+(r.model.probability-r.truth)**2,0)/n;
+ byId("exp3Pairs").textContent=n?n+" / 24":"—";
+ byId("exp3Calls").textContent=exp3Rows.length+" of 48 calls loaded";
+ byId("exp3Original").textContent=n?pct(accuracy(a)):"—";
+ byId("exp3Revised").textContent=n?pct(accuracy(b)):"—";
+ byId("exp3OriginalBrier").textContent=n?"Brier "+brier(a).toFixed(3):"Brier —";
+ byId("exp3RevisedBrier").textContent=n?"Brier "+brier(b).toFixed(3):"Brier —";
+ byId("exp3Note").textContent=n
+   ? "Compared on case IDs: "+ids.join(", ")+". Original conflicts: "+
+     a.filter(isConflict).length+"; revised conflicts: "+b.filter(isConflict).length+
+     ". Cases missing either response are excluded."
+   : "Original and revised prompts are held fixed; only the fresh data seed differs from Experiments 001/002.";
+}
+byId("exp3Input").addEventListener("change",async e=>{
+ const file=e.target.files?.[0];if(!file)return;
+ try{
+   const contents=await file.text();
+   const entries=file.name.endsWith(".jsonl")||file.name.endsWith(".txt")
+     ?contents.split(/\r?\n/).filter(x=>x.trim()).map(JSON.parse)
+     :JSON.parse(contents);
+   if(!Array.isArray(entries))throw Error("Expected JSONL records.");
+   const seen=new Set();
+   for(const r of entries){
+     if(r.experiment!=="EXP-003"||r.seed!==20261106||
+       !Number.isInteger(r.id)||r.id<1||r.id>24||
+       !["original","revised"].includes(r.prompt)||
+       ![0,1].includes(r.truth)||![0,1].includes(r.baseline_label)||
+       typeof r.model?.probability!=="number"||!Number.isFinite(r.model.probability)||
+       r.model.probability<0||r.model.probability>1||
+       !["change","no_change"].includes(r.model.decision))
+       throw Error("Invalid EXP-003 record or schema.");
+     const key=r.id+"/"+r.prompt;
+     if(seen.has(key))throw Error("Duplicate case/prompt: "+key);
+     seen.add(key);
+   }
+   exp3Rows=entries;
+   byId("exp3Source").textContent=file.name+" · "+entries.length+" calls";
+   byId("error").hidden=true;renderExp3();
+ }catch(err){byId("error").textContent="Unable to load EXP-003: "+err.message;byId("error").hidden=false;}
  e.target.value="";
 });
 byId("reset").addEventListener("click",loadSnapshot);
