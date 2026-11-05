@@ -43,3 +43,35 @@ uv run python muse_regime_smoke.py --limit 24
 The output file `muse_regime_results.jsonl` is local and ignored by Git. Completed cases are skipped on rerun, and each failed request stops the run without retries. The script prints classification accuracy, baseline accuracy, and the Brier score of Muse's **uncalibrated subjective** probability estimates. The sample is small and exploratory; the baseline threshold is fixed at 1.75, not tuned. Do not interpret strong performance as proof of time-series representation learning or causality.
 
 **Stopping rule:** stop after 24 cases and inspect the results before extending the study. No changes to EXP-001 and no hidden future financial data are involved.
+
+## Experiment results dashboard
+
+A static, Apple-inspired report is available in [`dashboard/index.html`](dashboard/index.html).
+It opens with a **17-case observed transcript snapshot**, not a completed study or
+a simulated score. The snapshot records the visible terminal observations from
+November 5, 2026, and explicitly marks the empty Case 18 response.
+
+To open the site locally, from the repository root:
+
+```bash
+python3 -m http.server 8000
+```
+
+Then visit [http://localhost:8000/dashboard/](http://localhost:8000/dashboard/).
+The dashboard needs no npm installation, build step, GPU, or Baseten API calls.
+
+To display current results, click **Load local results** and select
+`muse_regime_results.jsonl` from the repository root. The file is read in your
+browser only; it is not uploaded to a server. This also works if the JSONL file
+has additional completed cases beyond the 17-case snapshot.
+
+Metrics are recomputed from the selected records. The local JSONL contains
+Muse's explicit `decision`, so the page can flag a disagreement between the
+decision and its reported probability. The original terminal log lacks that
+field; the included snapshot flags only *possible qualitative inconsistencies*
+in the written explanations, and should not be treated as a measured decision
+conflict.
+
+The dashboard does not publish the local JSONL or API key. To publish a later
+results snapshot, review the contents and intentionally commit a sanitized
+snapshot (do not automatically commit the local output).
