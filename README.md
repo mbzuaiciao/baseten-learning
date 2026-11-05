@@ -46,7 +46,7 @@ The output file `muse_regime_results.jsonl` is local and ignored by Git. Complet
 
 ## Experiment results dashboard
 
-A static, Apple-inspired report is available in [`dashboard/index.html`](dashboard/index.html).
+A static, Apple-inspired report is available in [`dashboard/index.html`](dashboard/index.html). Its EXP-002 and EXP-003 comparisons show published aggregate findings by default.
 It opens with a **17-case observed transcript snapshot**, not a completed study or
 a simulated score. The snapshot records the visible terminal observations from
 November 5, 2026, and explicitly marks the empty Case 18 response.
@@ -54,10 +54,10 @@ November 5, 2026, and explicitly marks the empty Case 18 response.
 To open the site locally, from the repository root:
 
 ```bash
-python3 -m http.server 8000
+uv run python -m http.server 8001
 ```
 
-Then visit [http://localhost:8000/dashboard/](http://localhost:8000/dashboard/).
+Then visit [http://localhost:8001/dashboard/](http://localhost:8001/dashboard/).
 The dashboard needs no npm installation, build step, GPU, or Baseten API calls.
 
 To display current results, click **Load local results** and select
@@ -75,6 +75,28 @@ conflict.
 The dashboard does not publish the local JSONL or API key. To publish a later
 results snapshot, review the contents and intentionally commit a sanitized
 snapshot (do not automatically commit the local output).
+
+## Completed results and research retrospective
+
+The three synthetic-volatility prompt experiments are now complete. See
+[research findings](docs/muse-regime-findings.md) for the setup, observed
+terminal-summary evidence, paired metrics, failure accounting, and limitations.
+The dashboard automatically displays these aggregate findings from
+[`dashboard/findings.json`](dashboard/findings.json); no local result file
+is needed for the headline comparison. Use the existing local-file controls
+to calculate scores from the full individual JSONL records and inspect cases.
+
+On the first seed, paired accuracy improved from 13/17 (76.5%) to 16/17 (94.1%).
+On the fresh seed, paired accuracy improved from 16/22 (72.7%) to 21/22 (95.5%),
+with original-prompt completion 22/24 and revised-prompt completion 24/24.
+These are small, exploratory synthetic results, not calibrated probability
+estimates or a claim of general financial forecasting performance.
+
+The planned EXP-003 stopping rule was met. No further API calls are necessary
+to document this study. The published aggregates were transcribed from
+user-shared terminal output; the raw ignored JSONL files remain local and
+were not committed. The historical partial `dashboard/snapshot.json`
+continues to represent only 17 EXP-001 cases.
 
 ## EXP-002: Clarified probability prompt
 
@@ -163,8 +185,7 @@ The `--mark-failed` option records the previously observed failure and exits
 without contacting the API. It is not a mechanism for inventing failures;
 only use it for calls whose failures you actually observed.
 
-The dashboard includes an **Experiment 003** loader for this single JSONL file
-and shows matched-case accuracy, Brier scores, and decision/probability conflicts.
+The dashboard publishes aggregate EXP-003 results and includes an **Experiment 003** loader for the local JSONL file to recompute matched-case accuracy, Brier scores, and decision/probability conflicts.
 As with the previous experiments, the local file is read in-browser and not
 automatically committed.
 
