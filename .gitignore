@@ -45,3 +45,6 @@ htmlcov/
 .obsidian/
 # Local experimental results (may contain model outputs)
 muse_regime_results.jsonl
+
+# Separate EXP-002 inference results
+muse_regime_exp002.jsonl
