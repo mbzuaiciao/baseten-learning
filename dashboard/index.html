@@ -20,6 +20,7 @@ section{margin-top:29px}.panel{padding:28px}.section-title{font-size:23px;letter
 footer{padding-top:32px;text-align:center;font-size:12px;color:#86868b}.error{margin:18px 0;color:#b5432f;font-size:13px}
 @media(max-width:850px){.cards{grid-template-columns:repeat(2,1fr)}.split{grid-template-columns:1fr}.method-grid{grid-template-columns:1fr}.hero{padding-top:46px}}
 @media(max-width:520px){.shell{padding:0 16px 50px}header{height:65px}.nav{display:none}.cards{gap:10px}.card{padding:18px;min-height:130px}.panel{padding:20px}.hero p{font-size:16px}.metric{margin-top:14px}}
+.comparison{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin:20px 0}.comparison-cell{background:#f5f5f7;border-radius:15px;padding:20px}.comparison-value{font-size:30px;font-weight:650;letter-spacing:-.04em;margin-top:10px}.comparison-sub{font-size:12px;color:#6e6e73;margin-top:6px}.comparison-controls{display:flex;gap:12px;align-items:center;flex-wrap:wrap}@media(max-width:650px){.comparison{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -45,6 +46,17 @@ footer{padding-top:32px;text-align:center;font-size:12px;color:#86868b}.error{ma
 <div class="insight"><strong>Incomplete, not a final evaluation.</strong> Case 18 returned no visible response after reaching the 2,500-token limit. Only successful cases are scored.</div>
 <div class="progress" id="progress" aria-label="Progress across 24 cases"></div><p class="hint" id="progressText"></p>
 </section></div>
+<section class="panel" aria-labelledby="compareTitle">
+<h2 id="compareTitle" class="section-title">Experiment 002 · Clearer instructions</h2>
+<p class="section-intro">Compare the revised prompt with the original on exactly the same case IDs. No Experiment 002 results are published yet; load your local file after running the new script.</p>
+<div class="comparison-controls"><label class="upload">Load Experiment 002<input id="exp2Input" type="file" accept=".jsonl,.json,.txt"></label><span class="small" id="exp2Source">Awaiting results · no scores yet</span></div>
+<div class="comparison">
+<div class="comparison-cell"><div class="metric-label">Matched cases</div><div class="comparison-value" id="pairN">—</div><div class="comparison-sub">Only cases completed by both models</div></div>
+<div class="comparison-cell"><div class="metric-label">EXP-001 accuracy</div><div class="comparison-value" id="pairOld">—</div><div class="comparison-sub" id="pairOldBrier">Brier —</div></div>
+<div class="comparison-cell"><div class="metric-label">EXP-002 accuracy</div><div class="comparison-value" id="pairNew">—</div><div class="comparison-sub" id="pairNewBrier">Brier —</div></div>
+</div>
+<p class="hint" id="pairNote">Both runs use the same synthetic observations. EXP-002 clarifies probability direction and asks the binary decision to match the 0.5 threshold. The comparison is exploratory and does not establish improvement until results are collected.</p>
+</section>
 <section class="panel"><div class="case-tools"><div><h2 class="section-title">Case explorer</h2><p class="section-intro" style="margin-bottom:0">Inspect individual predictions and the model’s explanation.</p></div><select id="filter" aria-label="Filter case outcomes"><option value="all">All completed cases</option><option value="errors">Muse incorrect</option><option value="correct">Muse correct</option><option value="conflicts">Decision vs probability conflicts</option></select></div>
 <div class="table-wrap"><table><thead><tr><th>Case</th><th>Ground truth</th><th>Baseline</th><th>Muse P(change)</th><th>Muse result</th><th>Explanation</th></tr></thead><tbody id="caseRows"></tbody></table></div>
 <p class="hint">For the transcript snapshot, the explicit JSON decision was not displayed in terminal logs; discrepancies flagged in the explanations are qualitative observations, not a measured decision/probability conflict. Loading your local JSONL enables a strict consistency check against the recorded <code>model.decision</code>.</p></section>
@@ -58,7 +70,7 @@ footer{padding-top:32px;text-align:center;font-size:12px;color:#86868b}.error{ma
 <script>
 "use strict";
 const byId=id=>document.getElementById(id);
-let rows=[], source="snapshot", meta={};
+let rows=[], exp2Rows=[], source="snapshot", meta={};
 const TOTAL=24;
 const pct=x=>(x*100).toFixed(1)+"%";
 const label=x=>x===1?"Change":"No change";
@@ -77,6 +89,24 @@ function validate(items){
 }
 const isCorrect=r=>(r.model.probability>=.5?1:0)===r.truth;
 const isConflict=r=>r.model.decision!==undefined&&(r.model.decision==="change")!==(r.model.probability>=.5);
+function renderComparison(){
+ const map=new Map(rows.map(r=>[r.id,r]));
+ const matched=exp2Rows.filter(r=>map.has(r.id));
+ const old=matched.map(r=>map.get(r.id));
+ const accuracy=a=>a.filter(isCorrect).length/a.length;
+ const brier=a=>a.reduce((s,r)=>s+(r.model.probability-r.truth)**2,0)/a.length;
+ byId("pairN").textContent=matched.length||"—";
+ byId("pairOld").textContent=matched.length?pct(accuracy(old)):"—";
+ byId("pairNew").textContent=matched.length?pct(accuracy(matched)):"—";
+ byId("pairOldBrier").textContent=matched.length?"Brier "+brier(old).toFixed(3):"Brier —";
+ byId("pairNewBrier").textContent=matched.length?"Brier "+brier(matched).toFixed(3):"Brier —";
+ const conflicts=exp2Rows.filter(isConflict).length;
+ byId("pairNote").textContent=exp2Rows.length
+ ? matched.length+" matched cases. EXP-002 completed "+exp2Rows.length+
+   "/24. EXP-002 decision/probability conflicts: "+conflicts+
+   ". Missing cases excluded from paired accuracy and Brier calculations."
+ : "Both runs use the same synthetic observations. EXP-002 clarifies probability direction and asks the binary decision to match the 0.5 threshold. No EXP-002 results have been loaded.";
+}
 function render(){
  const n=rows.length, m=rows.filter(isCorrect).length, b=rows.filter(r=>r.baseline_label===r.truth).length;
  const a=n?m/n:0,base=n?b/n:0;
@@ -107,6 +137,7 @@ function render(){
    tr.append(text("td",r.model.reason||"No explanation recorded","reason"));tbody.append(tr);
  }
  if(!visible.length){const tr=document.createElement("tr");const td=text("td","No cases match this filter.","muted");td.colSpan=6;tr.append(td);tbody.append(tr);}
+ renderComparison();
 }
 async function loadSnapshot(){
  byId("error").hidden=true;
@@ -121,6 +152,18 @@ byId("fileInput").addEventListener("change",async e=>{
    const candidate=validate(Array.isArray(parsed)?parsed:(parsed.cases||[]));
    rows=candidate;source="local";byId("error").hidden=true;render();
  }catch(err){byId("error").textContent="Unable to load the file: "+err.message;byId("error").hidden=false;}
+ e.target.value="";
+});
+byId("exp2Input").addEventListener("change",async e=>{
+ const file=e.target.files?.[0];if(!file)return;
+ try{
+   const input=await file.text();
+   const parsed=file.name.endsWith(".jsonl")||file.name.endsWith(".txt")?input.split(/\r?\n/).filter(x=>x.trim()).map(JSON.parse):JSON.parse(input);
+   const candidate=validate(Array.isArray(parsed)?parsed:(parsed.cases||[]));
+   exp2Rows=candidate;
+   byId("exp2Source").textContent=file.name+" · "+candidate.length+" cases";
+   byId("error").hidden=true;renderComparison();
+ }catch(err){byId("error").textContent="Unable to load EXP-002: "+err.message;byId("error").hidden=false;}
  e.target.value="";
 });
 byId("reset").addEventListener("click",loadSnapshot);
