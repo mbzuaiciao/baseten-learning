@@ -1,0 +1,70 @@
+{
+  "source": "Aggregated results transcribed from user-shared terminal outputs, 2026-11-05. Raw local JSONL files are not published.",
+  "study": "Muse Spark Open synthetic volatility regime experiment",
+  "model": "meta-models/muse-spark-open-1026",
+  "settings": {
+    "reasoning_effort": "low",
+    "max_tokens": 2500,
+    "planned_cases_per_dataset": 24
+  },
+  "exp001_exp002": {
+    "seed": 20261105,
+    "paired_successful_cases": 17,
+    "original": {
+      "correct": 13,
+      "scored": 17,
+      "brier": 0.152,
+      "decision_probability_conflicts": 3
+    },
+    "revised": {
+      "correct": 16,
+      "scored": 17,
+      "brier": 0.066,
+      "decision_probability_conflicts": 0
+    },
+    "revised_all": {
+      "correct": 22,
+      "scored": 24,
+      "brier": 0.073,
+      "decision_probability_conflicts": 0
+    },
+    "original_attempted": 18,
+    "original_successful": 17
+  },
+  "exp003": {
+    "seed": 20261106,
+    "attempted_calls": 48,
+    "paired_successful_cases": 22,
+    "original": {
+      "correct": 16,
+      "scored": 22,
+      "brier": 0.205,
+      "decision_probability_conflicts": 5,
+      "successes": 22,
+      "failures": 2
+    },
+    "revised": {
+      "correct": 21,
+      "scored": 22,
+      "brier": 0.052,
+      "decision_probability_conflicts": 0,
+      "successes": 24,
+      "failures": 0
+    },
+    "failure_cases": {
+      "original": [
+        8,
+        20
+      ],
+      "revised": []
+    },
+    "revised_all_accuracy": {
+      "correct": 22,
+      "scored": 24
+    },
+    "revised_error_cases": [
+      8,
+      14
+    ]
+  }
+}

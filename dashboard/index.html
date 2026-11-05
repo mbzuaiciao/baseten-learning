@@ -27,7 +27,7 @@ footer{padding-top:32px;text-align:center;font-size:12px;color:#86868b}.error{ma
 <div class="shell">
 <header><a class="brand" href="./">Muse<span>Research</span></a><div class="nav">Baseten Learning <span aria-hidden="true">·</span> Experimental results</div></header>
 <main>
-<div class="hero"><div class="eyebrow">Research / Pilot 001</div><h1>Can AI recognize<br>market regime shifts?</h1><p>A controlled study of whether Muse Spark Open can distinguish persistent volatility changes from isolated shocks in synthetic financial returns.</p></div>
+<div class="hero"><div class="eyebrow">Research / Experiments 001–003</div><h1>Can AI recognize<br>market regime shifts?</h1><p>A controlled study of whether clearer probability instructions improve how Muse Spark Open distinguishes persistent volatility changes from isolated shocks.</p></div>
 <div class="toolbar"><div class="pill"><i class="dot" aria-hidden="true"></i><span id="runStatus">Pilot stopped at Case 18</span></div><div class="controls"><span id="sourceLabel" class="small" aria-live="polite">Observed transcript snapshot</span><label class="upload">Load local results<input id="fileInput" type="file" accept=".jsonl,.json,.txt"></label><button id="reset" class="subtle" type="button">Reset</button></div></div>
 <div id="error" class="error" role="alert" hidden></div>
 <div class="cards" aria-label="Key metrics">
@@ -48,7 +48,7 @@ footer{padding-top:32px;text-align:center;font-size:12px;color:#86868b}.error{ma
 </section></div>
 <section class="panel" aria-labelledby="compareTitle">
 <h2 id="compareTitle" class="section-title">Experiment 002 · Clearer instructions</h2>
-<p class="section-intro">Compare the revised prompt with the original on exactly the same case IDs. No Experiment 002 results are published yet; load your local file after running the new script.</p>
+<p class="section-intro">Compare the revised prompt with the original on exactly the same case IDs. The observed paired findings are now published below. Load your local EXP-002 JSONL to recompute and inspect them.</p>
 <div class="comparison-controls"><label class="upload">Load Experiment 002<input id="exp2Input" type="file" accept=".jsonl,.json,.txt"></label><span class="small" id="exp2Source">Awaiting results · no scores yet</span></div>
 <div class="comparison">
 <div class="comparison-cell"><div class="metric-label">Matched cases</div><div class="comparison-value" id="pairN">—</div><div class="comparison-sub">Only cases completed by both models</div></div>
@@ -61,7 +61,7 @@ footer{padding-top:32px;text-align:center;font-size:12px;color:#86868b}.error{ma
 <section class="panel" aria-labelledby="exp3Title">
 <h2 class="section-title" id="exp3Title">Experiment 003 · New data generalization</h2>
 <p class="section-intro">A fresh set of 24 synthetic series, with both frozen prompts evaluated on every case. Scores are calculated on matched case IDs only.</p>
-<div class="comparison-controls"><label class="upload">Load Experiment 003<input id="exp3Input" type="file" accept=".jsonl,.json,.txt"></label><span class="small" id="exp3Source">No results loaded · awaiting new run</span></div>
+<div class="comparison-controls"><label class="upload">Load Experiment 003<input id="exp3Input" type="file" accept=".jsonl,.json,.txt"></label><span class="small" id="exp3Source">Published transcript summary · load local JSONL</span></div>
 <div class="comparison">
 <div class="comparison-cell"><div class="metric-label">Paired cases</div><div class="comparison-value" id="exp3Pairs">—</div><div class="comparison-sub" id="exp3Calls">0 of 48 calls loaded</div></div>
 <div class="comparison-cell"><div class="metric-label">Original prompt accuracy</div><div class="comparison-value" id="exp3Original">—</div><div class="comparison-sub" id="exp3OriginalBrier">Brier —</div></div>
@@ -72,7 +72,7 @@ footer{padding-top:32px;text-align:center;font-size:12px;color:#86868b}.error{ma
 <section class="panel"><div class="case-tools"><div><h2 class="section-title">Case explorer</h2><p class="section-intro" style="margin-bottom:0">Inspect individual predictions and the model’s explanation.</p></div><select id="filter" aria-label="Filter case outcomes"><option value="all">All completed cases</option><option value="errors">Muse incorrect</option><option value="correct">Muse correct</option><option value="conflicts">Decision vs probability conflicts</option></select></div>
 <div class="table-wrap"><table><thead><tr><th>Case</th><th>Ground truth</th><th>Baseline</th><th>Muse P(change)</th><th>Muse result</th><th>Explanation</th></tr></thead><tbody id="caseRows"></tbody></table></div>
 <p class="hint">For the transcript snapshot, the explicit JSON decision was not displayed in terminal logs; discrepancies flagged in the explanations are qualitative observations, not a measured decision/probability conflict. Loading your local JSONL enables a strict consistency check against the recorded <code>model.decision</code>.</p></section>
-<section class="panel"><h2 class="section-title">How the experiment works</h2><p class="section-intro">An intentionally small exploratory study, separate from the frozen EXP-001 foundation-model protocol.</p><div class="method-grid">
+<section class="panel"><h2 class="section-title">How the experiment works</h2><p class="section-intro">An intentionally small exploratory study, separate from the frozen EXP-001 foundation-model protocol. <a href="../docs/muse-regime-findings.md" style="color:#0066cc">Read full research findings</a>.</p><div class="method-grid">
 <div><h3>01 · Generate</h3><p>24 reproducible 60-day return series. Half have a sustained volatility increase after day 30; the others have unchanged volatility with an isolated outlier.</p></div>
 <div><h3>02 · Evaluate</h3><p>Muse receives only the return observations and returns a change probability, a binary decision and a short reason. A fixed robust statistical rule serves as the baseline.</p></div>
 <div><h3>03 · Interpret</h3><p>Compare accuracy and Brier score; inspect unsupported numerical claims and probability/decision disagreements. No inference about causal market mechanisms is warranted.</p></div>
@@ -82,7 +82,7 @@ footer{padding-top:32px;text-align:center;font-size:12px;color:#86868b}.error{ma
 <script>
 "use strict";
 const byId=id=>document.getElementById(id);
-let rows=[], exp2Rows=[], exp3Rows=[], source="snapshot", meta={};
+let rows=[], exp2Rows=[], exp3Rows=[], source="snapshot", meta={}, findings=null;
 const TOTAL=24;
 const pct=x=>(x*100).toFixed(1)+"%";
 const label=x=>x===1?"Change":"No change";
@@ -102,6 +102,18 @@ function validate(items){
 const isCorrect=r=>(r.model.probability>=.5?1:0)===r.truth;
 const isConflict=r=>r.model.decision!==undefined&&(r.model.decision==="change")!==(r.model.probability>=.5);
 function renderComparison(){
+ if(findings && !exp2Rows.length){
+   const d=findings.exp001_exp002;
+   byId("pairN").textContent=d.paired_successful_cases+" / 24";
+   byId("pairOld").textContent=pct(d.original.correct/d.original.scored);
+   byId("pairNew").textContent=pct(d.revised.correct/d.revised.scored);
+   byId("pairOldBrier").textContent="Brier "+d.original.brier.toFixed(3);
+   byId("pairNewBrier").textContent="Brier "+d.revised.brier.toFixed(3);
+   byId("pairNote").textContent="Published paired results from terminal output; EXP-002 also scored "+
+     d.revised_all.correct+"/"+d.revised_all.scored+" across all 24 cases (Brier "+
+     d.revised_all.brier.toFixed(3)+"). Load local results for a record-level comparison.";
+   return;
+ }
  const map=new Map(rows.map(r=>[r.id,r]));
  const matched=exp2Rows.filter(r=>map.has(r.id));
  const old=matched.map(r=>map.get(r.id));
@@ -180,6 +192,23 @@ byId("exp2Input").addEventListener("change",async e=>{
 });
 
 function renderExp3(){
+ if(findings && !exp3Rows.length){
+   const d=findings.exp003;
+   byId("exp3Pairs").textContent=d.paired_successful_cases+" / 24";
+   byId("exp3Calls").textContent=d.attempted_calls+" of 48 attempted · "+
+     (d.original.failures+d.revised.failures)+" failures";
+   byId("exp3Original").textContent=pct(d.original.correct/d.original.scored);
+   byId("exp3Revised").textContent=pct(d.revised.correct/d.revised.scored);
+   byId("exp3OriginalBrier").textContent="Brier "+d.original.brier.toFixed(3);
+   byId("exp3RevisedBrier").textContent="Brier "+d.revised.brier.toFixed(3);
+   byId("exp3Note").textContent="Published terminal summary: original "+
+     d.original.successes+"/24 usable, revised "+d.revised.successes+
+     "/24 usable. Decision/probability conflicts: "+d.original.decision_probability_conflicts+
+     " vs "+d.revised.decision_probability_conflicts+
+     ". Original failures on Cases "+d.failure_cases.original.join(" and ")+
+     ". Revised all-case accuracy: "+d.revised_all_accuracy.correct+"/24. Load local JSONL for case-level results.";
+   return;
+ }
  const orig=new Map(exp3Rows.filter(r=>r.prompt==="original"&&r.model).map(r=>[r.id,r]));
  const revised=new Map(exp3Rows.filter(r=>r.prompt==="revised"&&r.model).map(r=>[r.id,r]));
  const ids=[...orig.keys()].filter(id=>revised.has(id)).sort((a,b)=>a-b);
@@ -234,6 +263,20 @@ byId("exp3Input").addEventListener("change",async e=>{
 });
 byId("reset").addEventListener("click",loadSnapshot);
 byId("filter").addEventListener("change",render);
+async function loadFindings(){
+ try{
+   const response=await fetch("./findings.json");
+   if(!response.ok)throw Error("Not found");
+   findings=await response.json();
+   renderComparison();
+   renderExp3();
+   byId("exp2Source").textContent="Published transcript summary · load local JSONL";
+   byId("exp3Source").textContent="Published transcript summary · load local JSONL";
+ }catch(err){
+   // The local-file loaders remain available if the aggregate snapshot is absent.
+ }
+}
 loadSnapshot();
+loadFindings();
 </script>
 </body></html>
