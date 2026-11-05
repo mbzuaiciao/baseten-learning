@@ -180,15 +180,17 @@ byId("exp2Input").addEventListener("change",async e=>{
 });
 
 function renderExp3(){
- const orig=new Map(exp3Rows.filter(r=>r.prompt==="original").map(r=>[r.id,r]));
- const revised=new Map(exp3Rows.filter(r=>r.prompt==="revised").map(r=>[r.id,r]));
+ const orig=new Map(exp3Rows.filter(r=>r.prompt==="original"&&r.model).map(r=>[r.id,r]));
+ const revised=new Map(exp3Rows.filter(r=>r.prompt==="revised"&&r.model).map(r=>[r.id,r]));
  const ids=[...orig.keys()].filter(id=>revised.has(id)).sort((a,b)=>a-b);
  const a=ids.map(id=>orig.get(id)), b=ids.map(id=>revised.get(id));
  const n=ids.length;
+ const origFailed=exp3Rows.filter(r=>r.prompt==="original"&&r.failure).length;
+ const revisedFailed=exp3Rows.filter(r=>r.prompt==="revised"&&r.failure).length;
  const accuracy=items=>items.filter(isCorrect).length/n;
  const brier=items=>items.reduce((s,r)=>s+(r.model.probability-r.truth)**2,0)/n;
  byId("exp3Pairs").textContent=n?n+" / 24":"—";
- byId("exp3Calls").textContent=exp3Rows.length+" of 48 calls loaded";
+ byId("exp3Calls").textContent=exp3Rows.length+" of 48 attempted · "+(origFailed+revisedFailed)+" failures";
  byId("exp3Original").textContent=n?pct(accuracy(a)):"—";
  byId("exp3Revised").textContent=n?pct(accuracy(b)):"—";
  byId("exp3OriginalBrier").textContent=n?"Brier "+brier(a).toFixed(3):"Brier —";
@@ -196,7 +198,7 @@ function renderExp3(){
  byId("exp3Note").textContent=n
    ? "Compared on case IDs: "+ids.join(", ")+". Original conflicts: "+
      a.filter(isConflict).length+"; revised conflicts: "+b.filter(isConflict).length+
-     ". Cases missing either response are excluded."
+     ". Failed calls — original: "+origFailed+"; revised: "+revisedFailed+". Cases missing either usable response are excluded."
    : "Original and revised prompts are held fixed; only the fresh data seed differs from Experiments 001/002.";
 }
 byId("exp3Input").addEventListener("change",async e=>{
@@ -213,9 +215,12 @@ byId("exp3Input").addEventListener("change",async e=>{
        !Number.isInteger(r.id)||r.id<1||r.id>24||
        !["original","revised"].includes(r.prompt)||
        ![0,1].includes(r.truth)||![0,1].includes(r.baseline_label)||
-       typeof r.model?.probability!=="number"||!Number.isFinite(r.model.probability)||
-       r.model.probability<0||r.model.probability>1||
-       !["change","no_change"].includes(r.model.decision))
+       !(
+         (r.model&&typeof r.model.probability==="number"&&Number.isFinite(r.model.probability)&&
+          r.model.probability>=0&&r.model.probability<=1&&
+          ["change","no_change"].includes(r.model.decision)&&!r.failure)||
+         (!r.model&&r.failure&&typeof r.failure.kind==="string")
+       ))
        throw Error("Invalid EXP-003 record or schema.");
      const key=r.id+"/"+r.prompt;
      if(seen.has(key))throw Error("Duplicate case/prompt: "+key);
