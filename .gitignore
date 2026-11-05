@@ -48,3 +48,6 @@ muse_regime_results.jsonl
 
 # Separate EXP-002 inference results
 muse_regime_exp002.jsonl
+
+# EXP-003 fresh-seed paired inference outputs
+muse_regime_exp003.jsonl
