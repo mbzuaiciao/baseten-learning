@@ -1,0 +1,161 @@
+{
+  "source": "Transcript snapshot from user-shared terminal output on 2026-11-05; baseline_ratio, explicit model.decision and API token usage unavailable.",
+  "total_cases": 24,
+  "stopped_at": 18,
+  "stop_reason": "Case 18 returned empty content (finish_reason=length; 2500 completion tokens)",
+  "cases": [
+    {
+      "id": 1,
+      "truth": 1,
+      "baseline_label": 0,
+      "model": {
+        "probability": 0.92,
+        "reason": "Sample variance roughly doubles in second half with sustained large moves, unlikely under constant volatility."
+      }
+    },
+    {
+      "id": 2,
+      "truth": 0,
+      "baseline_label": 0,
+      "model": {
+        "probability": 0.22,
+        "reason": "Variances are 1.08 vs 1.26, F-ratio ~1.17 with p>0.5, difference driven by one 4.2% outlier rather than persistent volatility shift."
+      }
+    },
+    {
+      "id": 3,
+      "truth": 1,
+      "baseline_label": 1,
+      "model": {
+        "probability": 0.99,
+        "reason": "Variance increases ~5.6x from ~0.97 to ~5.5, far beyond random variation for n=30 per period."
+      }
+    },
+    {
+      "id": 4,
+      "truth": 0,
+      "baseline_label": 0,
+      "model": {
+        "probability": 0.72,
+        "reason": "Second period variance is inflated by isolated outliers, not a persistent increase in dispersion."
+      }
+    },
+    {
+      "id": 5,
+      "truth": 1,
+      "baseline_label": 1,
+      "model": {
+        "probability": 0.97,
+        "reason": "Sample standard deviation increased from ~0.96 to ~2.84 and elevated absolute returns persist throughout days 31-60."
+      }
+    },
+    {
+      "id": 6,
+      "truth": 0,
+      "baseline_label": 0,
+      "model": {
+        "probability": 0.15,
+        "reason": "Apparent higher volatility in days 31-60 is driven by a single 5.65 outlier, with remaining variance nearly identical to days 1-30."
+      }
+    },
+    {
+      "id": 7,
+      "truth": 1,
+      "baseline_label": 1,
+      "model": {
+        "probability": 0.98,
+        "reason": "Variance increases ~7-fold from ~0.78 to ~5.98 with elevated dispersion throughout period 2, not attributable to isolated outliers."
+      }
+    },
+    {
+      "id": 8,
+      "truth": 0,
+      "baseline_label": 0,
+      "model": {
+        "probability": 0.88,
+        "reason": "Sample standard deviations are nearly identical (~1.25% vs ~1.21%) with no persistent change in dispersion."
+      }
+    },
+    {
+      "id": 9,
+      "truth": 1,
+      "baseline_label": 1,
+      "model": {
+        "probability": 0.97,
+        "reason": "Realized volatility roughly tripled from ~0.8% to ~2.2% and remained elevated across all of days 31-60, inconsistent with random variation."
+      }
+    },
+    {
+      "id": 10,
+      "truth": 0,
+      "baseline_label": 0,
+      "model": {
+        "probability": 0.3,
+        "reason": "Variance ratio is small and not statistically significant for n=30 per group, consistent with random variation."
+      }
+    },
+    {
+      "id": 11,
+      "truth": 1,
+      "baseline_label": 1,
+      "model": {
+        "probability": 0.97,
+        "reason": "Variance increases ~9x from ~0.83 to ~7.56 with elevated dispersion persisting across the second period."
+      }
+    },
+    {
+      "id": 12,
+      "truth": 0,
+      "baseline_label": 0,
+      "model": {
+        "probability": 0.78,
+        "reason": "Sample variance nearly doubles from ~0.67 to ~1.44 (ratio ~2.2), unlikely under equal volatility with n=30 per period."
+      }
+    },
+    {
+      "id": 13,
+      "truth": 1,
+      "baseline_label": 1,
+      "model": {
+        "probability": 0.97,
+        "reason": "Variance increases about twelve-fold in days 31-60 with consistently wider dispersion, not attributable to a single outlier."
+      }
+    },
+    {
+      "id": 14,
+      "truth": 0,
+      "baseline_label": 0,
+      "model": {
+        "probability": 0.68,
+        "reason": "Second-half variance increase is driven by isolated outliers on ~4 days, not a persistent widening across the period."
+      }
+    },
+    {
+      "id": 15,
+      "truth": 1,
+      "baseline_label": 1,
+      "model": {
+        "probability": 0.98,
+        "reason": "Estimated volatility roughly doubled from ~1.0% to ~2.5% with variance ratio ~6.3, highly significant for n=30 per period."
+      }
+    },
+    {
+      "id": 16,
+      "truth": 0,
+      "baseline_label": 1,
+      "model": {
+        "probability": 0.22,
+        "reason": "Second-half variance is inflated by one isolated extreme return (5.85%), while volatility before and after the shock is similar to the first half."
+      }
+    },
+    {
+      "id": 17,
+      "truth": 1,
+      "baseline_label": 1,
+      "model": {
+        "probability": 0.92,
+        "reason": "Second-period variance is several times higher and elevated moves are spread across days 31-60, not a single outlier."
+      }
+    }
+  ]
+}
