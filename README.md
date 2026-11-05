@@ -75,3 +75,45 @@ conflict.
 The dashboard does not publish the local JSONL or API key. To publish a later
 results snapshot, review the contents and intentionally commit a sanitized
 snapshot (do not automatically commit the local output).
+
+## EXP-002: Clarified probability prompt
+
+EXP-002 asks whether **unambiguous probability instructions** improve Muse's
+classification and internal consistency. It reuses exactly the same 24 generated
+synthetic cases, the same Muse model, `reasoning_effort=low`, and the same
+2,500-token budget as the original pilot. **Only the text prompt changes.**
+The primary comparison is **paired by case ID**; incomplete API responses are not
+counted as incorrect classifications. The recorded probability is still
+uncalibrated, and requested decision consistency is part of the intervention.
+
+The original results stay untouched at `muse_regime_results.jsonl`.
+The new results are saved separately at `muse_regime_exp002.jsonl`.
+
+From the repository root, run the two-case smoke test first:
+
+```bash
+uv run python muse_regime_exp002.py --limit 2
+```
+
+Review the two answers for valid JSON and decision/probability consistency.
+If successful, complete the planned dataset:
+
+```bash
+uv run python muse_regime_exp002.py --limit 24
+```
+
+The script skips completed EXP-002 cases, never retries automatically, and stops
+on an invalid/empty response. Its terminal report compares both runs only on
+case IDs present in both local files. A failure can legitimately end the run;
+do not alter the sample or secretly change the token budget to improve scores.
+Inspect any claimed statistical numbers in explanations separately.
+
+Open the dashboard with `uv run python -m http.server 8001`, then visit
+`http://localhost:8001/dashboard/`. Keep the included EXP-001 snapshot or
+load the original local JSONL with **Load local results**. Load
+`muse_regime_exp002.jsonl` with **Load Experiment 002** to display
+matched-case accuracy and Brier scores. Both files stay in your browser.
+
+**Stopping rule:** evaluate at most 24 planned cases, compare on paired cases,
+and record whether the revised prompt improved reliability. This remains an
+exploratory prompt comparison, not foundation-model pretraining.
