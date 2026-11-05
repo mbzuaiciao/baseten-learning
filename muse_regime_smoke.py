@@ -116,9 +116,13 @@ def main():
             response = client.chat.completions.create(
                 model=MODEL,
                 messages=[{"role": "user", "content": make_prompt(row)}],
-                reasoning_effort="low", max_tokens=1000,
+                reasoning_effort="low", max_tokens=2500,
             )
-            answer = parse_answer(response.choices[0].message.content)
+            choice = response.choices[0]
+            if not choice.message.content:
+                print(f"Case {row['id']} empty response: finish_reason={choice.finish_reason}; "
+                      f"usage={response.usage.model_dump() if response.usage else None}")
+            answer = parse_answer(choice.message.content)
         except Exception as exc:
             print(f"Case {row['id']} failed: {type(exc).__name__}: {exc}")
             print("Stopped without retrying or using further credits.")
